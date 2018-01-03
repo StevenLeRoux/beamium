@@ -64,10 +64,9 @@ fn main() {
         .about("Send Prometheus metrics to Warp10")
         .args_from_usage("-c, --config=[FILE] 'Sets a custom config file'
                               \
-                          -v...                'Increase verbosity level (console only)'")
+                          -v...                'Increase verbosity level (console only)'
+                          -t                   'Test config'")
         .get_matches();
-
-    info!("starting");
 
     // Bootstrap config
     let config_path = matches.value_of("config").unwrap_or("");
@@ -80,11 +79,17 @@ fn main() {
     }
     let config = config.ok().unwrap();
 
+    if matches.is_present("t") {
+        info!("config ok");
+        std::process::exit(0);
+    }
+
+    info!("starting");
+
     // Setup logging
     let log_path = Path::new(&config.parameters.log_file).parent();
     if log_path.is_some() {
         let log_path = log_path.unwrap();
-        info!(format!("{}", log_path.display()));
 
         let dir = DirBuilder::new()
             .mode(0o750)
